@@ -1,3 +1,5 @@
+import StudentModel from "../../model/student/index.js";
+
 const students = [
   {
     id: 1,
@@ -39,32 +41,28 @@ const StudentController = {
       res.status(404).json({ message: "Error id not found" });
     }
   },
-  create: (req, res) => {
+  create: async (req, res) => {
     try {
       const payload = req.body;
-      const id = parseInt(req.params.id);
-      const student = students.find((student) => student.id === id);
-      if (!student) {
-        const newstudent = {
-          id: id,
-          name: payload.name,
-          age: payload.age,
-          grade: payload.age,
-        };
-        students.push(newstudent);
-        res.status(200).json({
-          message: "Student Created",
-          students,
-        });
-      }
+      // const student = await StudentModel.create({
+      //   firstName: payload.firstName,
+      //   lastName: payload.lastName,
+      //   phone: payload.phone,
+      // });
+      const student = new StudentModel();
+      student.firstName = payload.firstName;
+      student.lastName = payload.lastName;
+      student.phone = payload.phone;
+      await student.save();
+
       res.status(200).json({
-        message: "Student with id already exits",
-        id,
+        message: "Student Created",
+        student,
       });
     } catch (error) {
+      console.log(error);
       res.status(500).json({
         message: "Internal Server Error",
-        id,
       });
     }
   },

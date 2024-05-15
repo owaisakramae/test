@@ -5,7 +5,7 @@ StudentRouter.get("/students", StudentController.getAll);
 // Get student with id
 StudentRouter.get("/student/:id", StudentController.getSingle);
 //create student
-StudentRouter.post("/student/:id", StudentController.create);
+StudentRouter.post("/student", StudentController.create);
 //update student
 StudentRouter.put("/student/:id", StudentController.update);
 // Delete student with id
