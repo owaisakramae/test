@@ -1,3 +1,5 @@
+import MarksModel from "../../model/marks/index.js";
+
 const marks = [
   {
     id: 1,
@@ -13,19 +15,26 @@ const marks = [
   },
 ];
 const markController = {
-  getAll: (req, res) => {
+  getAll: async (req, res) => {
     try {
+      const payload = req.body;
+      const mark = await MarksModel.findAll();
       res.json({
-        marks,
+        mark,
       });
     } catch (error) {
+      console.log(error);
       res.status(500).json({ message: "Internal Server Error" });
     }
   },
-  getSingle: (req, res) => {
+  getSingle: async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
-      const mark = marks.find((mark) => mark.id === id);
+      const id1 = parseInt(req.params.id);
+      const mark = await MarksModel.findOne({
+        where: {
+          id: id1,
+        },
+      });
       if (!mark) {
         return res.status(404).json({ message: "Error id not found" });
       }
@@ -33,31 +42,37 @@ const markController = {
         mark,
       });
     } catch (error) {
-      res.status(500).json({ message: "Error id not found" });
+      res.status(500).json({ message: "Internal Server Error" });
     }
   },
-  create: (req, res) => {
+  create: async (req, res) => {
     try {
       const payload = req.body;
-      const id = parseInt(req.params.id);
-      const mark = marks.find((mark) => mark.id === id);
-      if (!mark) {
-        const newmark = {
-          id: id,
-          mark: payload.mark,
-        };
-        marks.push(newmark);
-        res.status(200).json({
-          message: "mark Added",
-          marks,
-        });
-      }
-      res.status(404).json({
-        message: "mark with id already exits",
-        id,
+      // const id = parseInt(req.params.id);
+      // const mark = marks.find((mark) => mark.id === id);
+      // if (!mark) {
+      //   const newmark = {
+      //     id: id,
+      //     mark: payload.mark,
+      //   };
+      //   marks.push(newmark);
+      const mark = new MarksModel();
+      mark.English = payload.English;
+      mark.Urdu = payload.Urdu;
+      mark.Maths = payload.Maths;
+      await mark.save();
+
+      res.status(200).json({
+        message: "mark Added",
+        mark,
       });
+      // }
+      // res.status(404).json({
+      //   message: "mark with id already exits",
+      //   id,
+      // });
     } catch (error) {
-      res.status(500).json({ message: "Internal Server Error" });
+      res.status(500).json({ message: "Internal Server Error", error });
     }
   },
   update: (req, res) => {

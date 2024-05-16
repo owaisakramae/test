@@ -1,3 +1,5 @@
+import TeacherModel from "../../model/teacher/index.js";
+
 const teachers = [
   {
     id: 1,
@@ -39,27 +41,32 @@ const TeacherController = {
       res.status(500).json({ message: "Error id not found" });
     }
   },
-  create: (req, res) => {
+  create: async (req, res) => {
     try {
       const payload = req.body;
-      const id = parseInt(req.params.id);
-      const teacher = teachers.find((teacher) => teacher.id === id);
-      if (!teacher) {
-        const newteacher = {
-          id: id,
-          name: payload.name,
-          subject: payload.subject,
-        };
-        teachers.push(newteacher);
-        res.status(200).json({
-          message: "Teacher Added",
-          teachers,
-        });
-      }
-      res.status(404).json({
-        message: "Teacher with id already exits",
-        id,
+      const teacher = new TeacherModel();
+      teacher.firstName = payload.firstName;
+      teacher.lastName = payload.lastName;
+      teacher.subject = payload.subject;
+      await teacher.save();
+      // const id = parseInt(req.params.id);
+      // const teacher = teachers.find((teacher) => teacher.id === id);
+      // if (!teacher) {
+      //   const newteacher = {
+      //     id: id,
+      //     name: payload.name,
+      //     subject: payload.subject,
+      //   };
+      //   teachers.push(newteacher);
+      res.status(200).json({
+        message: "Teacher Added",
+        teacher,
       });
+      // }
+      // res.status(404).json({
+      //   message: "Teacher with id already exits",
+      //   id,
+      // });
     } catch (error) {
       res.status(500).json({ message: "Internal Server Error" });
     }

@@ -1,39 +1,33 @@
 import StudentModel from "../../model/student/index.js";
-
-const students = [
-  {
-    id: 1,
-    name: "John Doe",
-    age: 20,
-    grade: "A",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    age: 22,
-    grade: "B",
-  },
-  {
-    id: 3,
-    name: "Alice Johnson",
-    age: 21,
-    grade: "C",
-  },
-];
 const StudentController = {
-  getAll: (req, res) => {
+  getAll: async (req, res) => {
     try {
+      const payload = req.body;
+      const students = await StudentModel.findAll({
+        where: {
+          firstName: payload.firstName,
+        },
+        order: [["createdAt", "DESC"]],
+        limit: payload.limit,
+      });
       res.json({
         students,
       });
     } catch (error) {
+      console.log(error);
+      console.log();
       res.status(500).json({ message: "Internal Server Error" });
     }
   },
-  getSingle: (req, res) => {
+  getSingle: async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
-      const student = students.find((student) => student.id === id);
+      const id1 = parseInt(req.params.id);
+      // const student = students.find((student) => student.id === id);
+      const student = await StudentModel.findOne({
+        where: {
+          id: id1,
+        },
+      });
       res.json({
         student,
       });
@@ -54,7 +48,6 @@ const StudentController = {
       student.lastName = payload.lastName;
       student.phone = payload.phone;
       await student.save();
-
       res.status(200).json({
         message: "Student Created",
         student,
@@ -66,50 +59,52 @@ const StudentController = {
       });
     }
   },
-  update: (req, res) => {
+  update: async (req, res) => {
     try {
       const payload = req.body;
       const id = parseInt(req.params.id);
-      const student = students.find((student) => student.id === id);
-      const indexOfStudentToRemove = students.indexOf(student);
+      // const student = students.find((student) => student.id === id);
+      // const indexOfStudentToRemove = students.indexOf(student);
+      const student = await StudentModel.findByPk(id);
       if (!student) {
         return res.status(404).json({
           message: "There is no student with this id",
           id,
         });
       } else {
-        const newstudent = {
-          id: id,
-          name: payload.name,
-          age: payload.age,
-          grade: payload.grade,
-        };
-        students.splice(indexOfStudentToRemove, 1, newstudent);
+        (student.firstName = payload.firstName
+          ? payload.firstName
+          : student.firstName),
+          (student.lastName = payload.lasttName
+            ? payload.lastName
+            : student.lastName),
+          (student.phone = payload.phone ? payload.phone : student.phone),
+          await student.save();
         res.status(200).json({
           message: "Student data with id updated",
-          students,
+          student,
         });
       }
     } catch (error) {
+      console.log(error);
       res.status(500).json({
         message: "Internal Server error",
       });
     }
   },
-  delete: (req, res) => {
+  delete: async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const student = students.find((student) => student.id === id);
-      const indexOfStudentToRemove = students.indexOf(student);
+      const student = await StudentModel.findByPk(id);
       if (!student) {
         return res.status(404).json({
           message: "Student does not exsits",
         });
       }
-      students.splice(indexOfStudentToRemove, 1);
+      await student.destroy();
       res.status(200).json({
         message: "Student with id deleted",
-        students,
+        student,
       });
     } catch (error) {
       res.status(500).json({

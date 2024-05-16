@@ -7,7 +7,7 @@ TeacherRouter.get("/teachers", TeacherController.getAll);
 
 TeacherRouter.get("/teacher/:id", TeacherController.getSingle);
 
-TeacherRouter.post("/teacher/:id", TeacherController.create);
+TeacherRouter.post("/teacher", TeacherController.create);
 
 TeacherRouter.put("/teacher/:id", TeacherController.update);
 
