@@ -1,19 +1,4 @@
 import MarksModel from "../../model/marks/index.js";
-
-const marks = [
-  {
-    id: 1,
-    mark: [10, 12, 12, 12, 15],
-  },
-  {
-    id: 2,
-    mark: [10, 10, 2, 20, 5],
-  },
-  {
-    id: 3,
-    mark: [8, 5, 15, 9, 16],
-  },
-];
 const markController = {
   getAll: async (req, res) => {
     try {
@@ -75,39 +60,44 @@ const markController = {
       res.status(500).json({ message: "Internal Server Error", error });
     }
   },
-  update: (req, res) => {
+  update: async (req, res) => {
     try {
       const payload = req.body;
       const id = parseInt(req.params.id);
-      const mark = marks.find((mark) => mark.id === id);
-      const indexOfmarkToRemove = marks.indexOf(mark);
-      if (indexOfmarkToRemove === -1) {
+      // const mark = marks.find((mark) => mark.id === id);
+      // const indexOfmarkToRemove = marks.indexOf(mark);
+      const mark = await MarksModel.findByPk(id);
+      if (!mark) {
         return res.status(404).json({
           message: "Error no marks found with this id.",
         });
       }
-      marks[indexOfmarkToRemove].mark = payload.mark;
+      mark.English = payload.English ? payload.English : mark.English;
+      mark.Urdu = payload.Urdu ? payload.Urdu : mark.Urdu;
+      mark.Maths = payload.Maths ? payload.Maths : mark.Maths;
+      await mark.save();
       res.status(200).json({
         message: "mark data with id updated",
-        marks,
+        mark,
       });
     } catch (error) {
       res.status(500).json({ message: "Internal Server Error" });
     }
   },
-  delete: (req, res) => {
+  delete: async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const mark = marks.find((mark) => mark.id === id);
-      const indexOfmarkToRemove = marks.indexOf(mark);
+      const mark = await MarksModel.findByPk(id);
+      // const mark = marks.find((mark) => mark.id === id);
+      // const indexOfmarkToRemove = marks.indexOf(mark);
       if (!mark) {
         return res.status(404).json({ message: "No mark with this id" });
       }
-      marks.splice(indexOfmarkToRemove, 1);
+      await mark.destroy();
       res.status(200).json({
         message: "mark with id deleted",
         id,
-        marks,
+        mark,
       });
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });

@@ -1,25 +1,15 @@
 import TeacherModel from "../../model/teacher/index.js";
-
-const teachers = [
-  {
-    id: 1,
-    name: "John Doe",
-    subject: "English",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    subject: "Urdu",
-  },
-  {
-    id: 3,
-    name: "Alice Johnson",
-    subject: "Maths",
-  },
-];
 const TeacherController = {
-  getAll: (req, res) => {
+  getAll: async (req, res) => {
     try {
+      const payload = req.body;
+      const teachers = await TeacherModel.findAll({
+        where: {
+          firstName: payload.firstName,
+        },
+        order: ["createdAt"],
+        limit: payload.limit,
+      });
       res.json({
         teachers,
       });
@@ -27,10 +17,11 @@ const TeacherController = {
       res.status(500).json({ message: "Internal Server Error" });
     }
   },
-  getSingle: (req, res) => {
+  getSingle: async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const teacher = teachers.find((teacher) => teacher.id === id);
+      // const teacher = teachers.find((teacher) => teacher.id === id);
+      const teacher = await TeacherModel.findByPk(id);
       if (!teacher) {
         return res.status(404).json({ message: "Error id not found" });
       }
@@ -71,44 +62,46 @@ const TeacherController = {
       res.status(500).json({ message: "Internal Server Error" });
     }
   },
-  update: (req, res) => {
+  update: async (req, res) => {
     try {
       const payload = req.body;
       const id = parseInt(req.params.id);
-      const teacher = teachers.find((teacher) => teacher.id === id);
-      const indexOfTeacherToRemove = teachers.indexOf(teacher);
-      teachers[indexOfTeacherToRemove].name = payload.name
-        ? payload.name
-        : teachers[indexOfTeacherToRemove].name;
-      teachers[indexOfTeacherToRemove].subject = payload.subject
-        ? payload.subject
-        : teachers[indexOfTeacherToRemove].subject;
-      res.status(200).json({
-        message: "Teacher data with id updated",
-        teachers,
-      });
+      // const teacher = teachers.find((teacher) => teacher.id === id);
+      // const indexOfTeacherToRemove = teachers.indexOf(teacher);
+      const teacher = await TeacherModel.findByPk(id);
       if (!teacher) {
         return res.status(404).json({
           message: "Error no teacher found with this id.",
+          id,
         });
       }
+      teacher.firstName = payload.firstName
+        ? payload.firstName
+        : teacher.firstName;
+      teacher.lastName = payload.lastName ? payload.lastName : teacher.lastName;
+      teacher.subject = payload.subject ? payload.subject : teacher.subject;
+      await teacher.save();
+      res.status(200).json({
+        message: "Teacher data with id updated",
+        teacher,
+      });
     } catch (error) {
+      console.log(error);
       res.status(500).json({ message: "Internal Server Error" });
     }
   },
-  delete: (req, res) => {
+  delete: async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const teacher = teachers.find((teacher) => teacher.id === id);
-      const indexOfTeacherToRemove = teachers.indexOf(teacher);
+      const teacher = await TeacherModel.findByPk(id);
       if (!teacher) {
         return res.status(404).json({ message: "No Teacher with this id" });
       }
-      teachers.splice(indexOfTeacherToRemove, 1);
+      await teacher.destroy();
       res.status(200).json({
         message: "Teacher with id deleted",
         id,
-        teachers,
+        teacher,
       });
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });

@@ -71,20 +71,19 @@ const StudentController = {
           message: "There is no student with this id",
           id,
         });
-      } else {
-        (student.firstName = payload.firstName
-          ? payload.firstName
-          : student.firstName),
-          (student.lastName = payload.lasttName
-            ? payload.lastName
-            : student.lastName),
-          (student.phone = payload.phone ? payload.phone : student.phone),
-          await student.save();
-        res.status(200).json({
-          message: "Student data with id updated",
-          student,
-        });
       }
+      (student.firstName = payload.firstName
+        ? payload.firstName
+        : student.firstName),
+        (student.lastName = payload.lasttName
+          ? payload.lastName
+          : student.lastName),
+        (student.phone = payload.phone ? payload.phone : student.phone),
+        await student.save();
+      res.status(200).json({
+        message: "Student data with id updated",
+        student,
+      });
     } catch (error) {
       console.log(error);
       res.status(500).json({
