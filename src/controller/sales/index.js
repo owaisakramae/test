@@ -1,6 +1,7 @@
+import ProductsModel from "../../model/product/index.js";
 import SalesModel from "../../model/sales/index.js";
-
 import SaleProductModel from "../../model/sales/salesProduct.js";
+
 const salesController = {
   getAll: async (req, res) => {
     try {
@@ -18,7 +19,13 @@ const salesController = {
     try {
       const id = parseInt(req.params.id);
       const sale = await SalesModel.findByPk(id, {
-        include: [SaleProductModel],
+        // include: [SaleProductModel],
+        include: [
+          {
+            model: SaleProductModel,
+            include: [ProductsModel],
+          },
+        ],
       });
       if (!sale) {
         return res.status(404).json({ message: "Error id not found" });
@@ -30,34 +37,82 @@ const salesController = {
       res.status(500).json({ message: "Internal Server Error" });
     }
   },
-  
+
   create: async (req, res) => {
+    //   try {
+    //     const payload = req.body;
+    //     const sale = new SalesModel();
+    //     sale.totalAmount = 0;
+    //     const salesProducts = await Promise.all(
+    //       payload.salesProducts.map(async (product1) => {
+    //         const product = await ProductsModel.findOne({
+    //           where: { productName: product1.productName },
+    //         });
+    //         if (!product) {
+    //           return res
+    //             .status(404)
+    //             .json({ message: "Product not found", product1 });
+    //         }
+    //         product.productStock -= product1.productQuantity;
+    //         sale.totalAmount += product1.productQuantity * product.rate;
+    //         // console.log(product1.productQuantity);
+    //         // console.log(product1.rate);
+    //         // console.log(sale.totalAmount);
+    //         await product.save();
+    //         return {
+    //           ...product1,
+    //           rate: product.rate,
+    //           ProductId: product.id,
+    //         };
+    //       })
+    //     );
+    //     await sale.save();
+    //     const Products = salesProducts.map((ele) => {
+    //       return {
+    //         ...ele,
+    //         SaleId: sale.id,
+    //       };
+    //     });
+    //     await SaleProductModel.bulkCreate(Products);
+    //     res.status(200).json({ message: "Sale added", sale });
+    //   } catch (error) {
+    //     console.log(error);
+    //     res.status(500).json({ message: "Internal Server Error", error });
+    //   }
+    // },
     try {
       const payload = req.body;
-      const sale = new SalesModel();
-      sale.totalAmount = 0;
-      payload.salesProducts.forEach((product) => {
-        sale.totalAmount += product.productQuantity * product.rate;
-        // console.log(product.productQuantity);
-        // console.log(product.rate);
-        // console.log(sale.totalAmount);
+      console.log("payload", payload);
+      let totalAmount = 0;
+      payload.salesProducts.forEach((ele) => {
+        totalAmount = totalAmount + ele.rate * ele.productQuantity;
       });
+      const sale = new SalesModel();
+      sale.totalAmount = totalAmount;
       await sale.save();
-
-      const salesProduct = payload.salesProducts.map((ele) => {
-        return {
+      console.log(payload.totalAmount);
+      const salesProduct = [];
+      for (let index = 0; index < payload.salesProducts.length; index++) {
+        const ele = payload.salesProducts[index];
+        const product = await ProductsModel.findByPk(ele.ProductId);
+        if (ele.productQuantity > product.productStock) {
+          return res.status(400).json({
+            message: "The product " + product.name + " has in-sufficient stock",
+          });
+        }
+        product.productStock -= ele.productQuantity;
+        product.save();
+        salesProduct.push({
           ...ele,
           SaleId: sale.id,
-        };
-      });
+        });
+      }
+      console.log("sales products", salesProduct);
       await SaleProductModel.bulkCreate(salesProduct);
-      res.status(200).json({
-        message: "sale Added",
-        sale,
-      });
+      res.status(200).json({ message: "sale created", sale, salesProduct });
     } catch (error) {
       console.log(error);
-      res.status(500).json({ message: "Internal Server Error", error });
+      res.status(500).json({ message: "internal server error" });
     }
   },
   update: async (req, res) => {

@@ -1,4 +1,5 @@
 import markRouter from "./marks/index.js";
+import categoryRouter from "./products/category.js";
 import productRouter from "./products/index.js";
 import salesRouter from "./sales/index.js";
 import StudentRouter from "./students/index.js";
@@ -9,6 +10,7 @@ const allRouter = [
   TeacherRouter,
   markRouter,
   salesRouter,
+  categoryRouter,
   productRouter,
 ];
 
