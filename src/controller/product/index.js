@@ -37,9 +37,11 @@ const productController = {
 
       const product = new ProductsModel();
       product.productName = payload.name;
+      product.productStock = payload.stock;
+      product.rate = payload.rate;
 
       await product.save();
-      await product.addCategories(payload.categories);
+      await product.addCategory(payload.categories);
 
       res.status(200).json({ message: "Product created", product });
     } catch (error) {

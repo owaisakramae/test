@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../../db/config.js";
+import StudentModel from "../student/index.js";
 
 const SalesModel = sequelize.define(
   "Sales",
@@ -13,5 +14,6 @@ const SalesModel = sequelize.define(
     // Other model options go here
   }
 );
-
+StudentModel.hasMany(SalesModel);
+SalesModel.belongsTo(StudentModel);
 export default SalesModel;

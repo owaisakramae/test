@@ -89,6 +89,7 @@ const salesController = {
       });
       const sale = new SalesModel();
       sale.totalAmount = totalAmount;
+      sale.StudentId = payload.id;
       await sale.save();
       console.log(payload.totalAmount);
       const salesProduct = [];

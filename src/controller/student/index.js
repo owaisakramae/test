@@ -1,3 +1,6 @@
+import ProductsModel from "../../model/product/index.js";
+import SalesModel from "../../model/sales/index.js";
+import SaleProductModel from "../../model/sales/salesProduct.js";
 import StudentModel from "../../model/student/index.js";
 const StudentController = {
   getAll: async (req, res) => {
@@ -27,6 +30,21 @@ const StudentController = {
         where: {
           id: id1,
         },
+        include: [
+          {
+            model: SalesModel,
+            attributes: ["id", "totalAmount", "StudentId"],
+            include: [
+              {
+                model: SaleProductModel,
+                attributes: ["productQuantity", "rate"],
+                include: [
+                  { model: ProductsModel, attributes: ["productName"] },
+                ],
+              },
+            ],
+          },
+        ],
       });
       res.json({
         student,
