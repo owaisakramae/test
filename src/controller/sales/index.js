@@ -85,7 +85,7 @@ const salesController = {
       console.log("payload", payload);
       let totalAmount = 0;
       payload.salesProducts.forEach((ele) => {
-        totalAmount = totalAmount + ele.rate * ele.productQuantity;
+        totalAmount += ele.rate * ele.productQuantity;
       });
       const sale = new SalesModel();
       sale.totalAmount = totalAmount;
@@ -94,6 +94,7 @@ const salesController = {
       const salesProduct = [];
       for (let index = 0; index < payload.salesProducts.length; index++) {
         const ele = payload.salesProducts[index];
+        console.log(ele);
         const product = await ProductsModel.findByPk(ele.ProductId);
         if (ele.productQuantity > product.productStock) {
           return res.status(400).json({

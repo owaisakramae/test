@@ -6,6 +6,7 @@ import TeacherModel from "../model/teacher/index.js";
 import ProductsModel from "../model/product/index.js";
 import CategoryModel from "../model/product/category.js";
 import sequelize from "./config.js";
+import UserModel from "../model/user/index.js";
 
 const syncDB = async () => {
   // await sequelize.sync({ alter: true, force: true });
@@ -16,6 +17,7 @@ const syncDB = async () => {
   await ProductsModel.sync({ alter: true, force: false });
   await SalesModel.sync({ alter: true, force: false });
   await SaleProductModel.sync({ alter: true, force: false });
+  await UserModel.sync({ alter: true, force: false });
 };
 
 export default syncDB;

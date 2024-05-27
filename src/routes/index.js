@@ -1,3 +1,4 @@
+import authRouter from "./auth/index.js";
 import markRouter from "./marks/index.js";
 import categoryRouter from "./products/category.js";
 import productRouter from "./products/index.js";
@@ -12,6 +13,7 @@ const allRouter = [
   salesRouter,
   categoryRouter,
   productRouter,
+  authRouter,
 ];
 
 export default allRouter;
