@@ -58,7 +58,7 @@ const AuthController = {
         email: userCheck.email,
       };
       const token = jwt.sign(data, process.env.JWT_SECRET_KEY, {
-        expiresIn: "1m",
+        expiresIn: "1h",
       });
       res.status(200).json({ message: "Login Successfully", data, token });
     } catch (error) {
