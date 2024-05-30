@@ -4,6 +4,6 @@ import authenticateMiddleWear from "../../middlewear/auth.js";
 const authRouter = Router();
 authRouter.post("/auth/signup", AuthController.signup);
 // // Get mark with id
-authRouter.post("/auth/signin", authenticateMiddleWear, AuthController.signin);
+authRouter.post("/auth/signin", AuthController.signin);
 
 export default authRouter;

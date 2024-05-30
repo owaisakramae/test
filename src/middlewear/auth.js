@@ -1,11 +1,17 @@
 import jwt from "jsonwebtoken";
+import TokenModel from "../model/Auth/token.js";
 
-const authenticateMiddleWear = (req, res, next) => {
+const authenticateMiddleWear = async (req, res, next) => {
   let token = req.headers.authorization;
   if (!token) {
     return res.status(401).json({ message: "Invalid Authorization" });
   }
   token = token.replace("Bearer ", "");
+  const tokenCheck = await TokenModel.findOne({
+    where: {
+      token,
+    },
+  });
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET_Key);
     console.log(decoded);

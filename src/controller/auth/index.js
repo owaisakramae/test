@@ -1,6 +1,7 @@
 import { compare, hash } from "bcrypt";
 import UserModel from "../../model/user/index.js";
 import jwt from "jsonwebtoken";
+import TokenModel from "../../model/Auth/token.js";
 const AuthController = {
   signup: async (req, res) => {
     try {
@@ -59,6 +60,9 @@ const AuthController = {
       };
       const token = jwt.sign(data, process.env.JWT_SECRET_KEY, {
         expiresIn: "1h",
+      });
+      await TokenModel.create({
+        token,
       });
       res.status(200).json({ message: "Login Successfully", data, token });
     } catch (error) {

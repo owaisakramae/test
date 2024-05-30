@@ -1,7 +1,8 @@
 import { Router } from "express";
 import salesController from "../../controller/sales/index.js";
+import authenticateMiddleWear from "../../middlewear/auth.js";
 const salesRouter = Router();
-salesRouter.get("/sales", salesController.getAll);
+salesRouter.get("/sales", authenticateMiddleWear, salesController.getAll);
 // Get sales with id
 salesRouter.get("/sales/:id", salesController.getSingle);
 salesRouter.get("/sale", salesController.getSingleName);
