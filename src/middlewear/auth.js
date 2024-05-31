@@ -12,6 +12,9 @@ const authenticateMiddleWear = async (req, res, next) => {
       token,
     },
   });
+  if (!tokenCheck) {
+    return res.status(401).json({ message: "Invalid Authorization" });
+  }
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET_Key);
     console.log(decoded);
