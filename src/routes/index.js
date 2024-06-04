@@ -1,4 +1,6 @@
 import authRouter from "./auth/index.js";
+import EmailRouter from "./email/index.js";
+import fileRouter from "./fileUpload/index.js";
 import markRouter from "./marks/index.js";
 import categoryRouter from "./products/category.js";
 import productRouter from "./products/index.js";
@@ -14,6 +16,8 @@ const allRouter = [
   categoryRouter,
   productRouter,
   authRouter,
+  EmailRouter,
+  fileRouter,
 ];
 
 export default allRouter;

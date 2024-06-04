@@ -3,6 +3,7 @@ import express from "express";
 import allRouter from "./routes/index.js";
 import { connectDB } from "./db/config.js";
 import syncDB from "./db/init.js";
+import transporter from "./email/index.js";
 
 connectDB();
 syncDB().then(() => {
@@ -10,6 +11,8 @@ syncDB().then(() => {
 });
 const app = express();
 app.use(express.json());
+
+// app.get(transporter);
 
 app.use(allRouter);
 
